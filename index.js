@@ -28,7 +28,7 @@ app.use(express.json());
 if (!process.env.SESSION_SECRET) {
   throw new Error("SESSION_SECRET is missing from the .env file.");
 }
-
+app.set("trust proxy", 1);
 app.use(
   session({
     name: "instagram.sid",
@@ -41,11 +41,11 @@ app.use(
       ttl: 24 * 60 * 60,
     }),
     cookie: {
-      httpOnly: true,
-      secure: false, // Local HTTP development only
-      sameSite: "lax",
-      maxAge: 24 * 60 * 60 * 1000,
-    },
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production",
+  sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+  maxAge: 24 * 60 * 60 * 1000,
+},
   })
 );
 
